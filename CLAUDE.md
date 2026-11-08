@@ -19,3 +19,12 @@ Next.js 15 App Router + TypeScript + Supabase + Vercel. Port of `reference/gator
 - E NCAA: `lib/import/ncaa*`, `app/api/ncaa/**` · F `app/(board)/{team,players}`, `components/team/**`
 - G `app/(board)/{games,profile}`, `components/games/**` · H `app/(board)/{strategy,bench}`, `components/strategy/**`
 - I `app/(board)/{env,import}`, `components/env/**`, `components/import/**` · shell/layout: lead session only
+
+## Development practices (enforced)
+- **Secrets:** only in `.env.local` / Vercel / Supabase dashboards. Never hardcode keys, never log them, never put them in URLs. `SUPABASE_SERVICE_ROLE_KEY` is server-only (route handlers/scripts) — never import `lib/supabase/admin.ts` from a client component, and never prefix a secret with `NEXT_PUBLIC_`.
+- **No team data in git:** box scores, GPS CSVs, JSON exports and rosters live in Supabase. Tests use small synthetic fixtures under `__fixtures__/` only (made-up names/numbers).
+- **Never commit** `.claude/`, `worktrees/`, `.env*` (except `.env.example`), build output. `npm run secrets` (also run by the pre-commit hook and CI) blocks these.
+- Never `git add -f` an ignored file. Never `--no-verify`.
+- Every PR: `npm run check` green + `npm run build` succeeds; CI (`.github/workflows/ci.yml`) re-runs both. Small focused PRs into `dev`; describe what was verified.
+- Server routes validate input and check the Supabase session before doing work; return JSON errors with proper status codes.
+- RLS is the security boundary: authenticated = read, `profiles.role='editor'` = write. Don't bypass with the service role for user-initiated writes.

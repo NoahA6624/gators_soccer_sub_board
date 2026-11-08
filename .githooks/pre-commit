@@ -1,0 +1,3 @@
+#!/bin/sh
+# Blocks commits containing secrets / forbidden files. Enabled via `npm install` (prepare script).
+node scripts/check-secrets.mjs || exit 1

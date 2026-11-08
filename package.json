@@ -9,7 +9,9 @@
     "lint": "eslint",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "check": "npm run typecheck && npm run lint && npm run test"
+    "check": "npm run secrets && npm run typecheck && npm run lint && npm run test",
+    "secrets": "node scripts/check-secrets.mjs",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
