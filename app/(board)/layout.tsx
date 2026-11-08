@@ -1,6 +1,7 @@
 import { BoardProvider } from '@/lib/data/board';
 import { TabNav } from '@/components/shell/TabNav';
 import { Subtitle } from '@/components/shell/Subtitle';
+import { SignOut } from '@/components/shell/SignOut';
 
 export default function BoardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,7 +12,7 @@ export default function BoardLayout({ children }: { children: React.ReactNode })
             <h1>Gator <span>Sub</span> Board</h1>
             <Subtitle />
           </div>
-          <TabNav />
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}><TabNav /><SignOut /></div>
         </header>
         <main id="app">{children}</main>
         <p className="foot">

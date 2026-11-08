@@ -4,6 +4,13 @@
 // UI state shape is a contract — do not rename fields.
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Filters, Game, LoadsByGame, Roster, Scope } from '@/lib/types';
+import { getBrowserClient } from '@/lib/supabase/client';
+import { SUPABASE_MISSING_MSG } from '@/lib/supabase/env';
+import { onBoardChange, type BoardChange } from './bus';
+import {
+  loadsFromRows, normalizeRoster, removeGame, rowToGame, rowToLoads, sortGames, upsertGame,
+  type GameRow, type LoadsRow, type RosterRow,
+} from './rows';
 
 export interface BoardCtx {
   games: Game[];
@@ -48,10 +55,69 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     try { localStorage.setItem(LS, JSON.stringify({ filters, scope, ui })); } catch {}
   }, [filters, scope, ui]);
 
-  // STUB: agent B replaces with Supabase fetch + realtime subscriptions + profile role.
+  // Supabase: initial fetch + profile role, then realtime postgres_changes on games/loads/roster.
   useEffect(() => {
-    void setGames; void setLoads; void setRoster; void setCanEdit; void setError;
-    setLoading(false);
+    const sb = getBrowserClient();
+    if (!sb) { setError(SUPABASE_MISSING_MSG); setLoading(false); return; }
+    let alive = true;
+
+    const apply = (c: BoardChange) => {
+      if (!alive) return;
+      switch (c.kind) {
+        case 'game': setGames((p) => upsertGame(p, c.game)); break;
+        case 'gameDeleted': setGames((p) => removeGame(p, c.id)); break;
+        case 'loads': setLoads((p) => ({ ...p, [c.gameId]: c.loads })); break;
+        case 'loadsDeleted': setLoads((p) => { if (!(c.gameId in p)) return p; const n = { ...p }; delete n[c.gameId]; return n; }); break;
+        case 'roster': setRoster(c.roster); break;
+      }
+    };
+    const offBus = onBoardChange(apply);
+
+    const channel = sb.channel('board')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'games' }, (p) => {
+        if (p.eventType === 'DELETE') { const id = (p.old as Partial<GameRow>).id; if (id) apply({ kind: 'gameDeleted', id }); }
+        else apply({ kind: 'game', game: rowToGame(p.new as GameRow) });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'loads' }, (p) => {
+        if (p.eventType === 'DELETE') { const id = (p.old as Partial<LoadsRow>).game_id; if (id) apply({ kind: 'loadsDeleted', gameId: id }); }
+        else { const r = p.new as LoadsRow; apply({ kind: 'loads', gameId: r.game_id, loads: rowToLoads(r) }); }
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'roster' }, (p) => {
+        if (p.eventType === 'DELETE') apply({ kind: 'roster', roster: {} });
+        else apply({ kind: 'roster', roster: normalizeRoster((p.new as RosterRow).players) });
+      });
+
+    (async () => {
+      try {
+        const { data: auth } = await sb.auth.getUser();
+        const user = auth.user;
+        if (!user) throw new Error('Not signed in.');
+        const [g, l, r, prof] = await Promise.all([
+          sb.from('games').select('id,date,doc').order('date', { ascending: true }),
+          sb.from('loads').select('game_id,rows,updated_at'),
+          sb.from('roster').select('id,players').eq('id', 'roster').maybeSingle(),
+          sb.from('profiles').select('role').eq('user_id', user.id).maybeSingle(),
+        ]);
+        const err = g.error || l.error || r.error || prof.error;
+        if (err) throw new Error(err.message);
+        if (!alive) return;
+        setGames(sortGames(((g.data ?? []) as GameRow[]).map(rowToGame)));
+        setLoads(loadsFromRows((l.data ?? []) as LoadsRow[]));
+        setRoster(normalizeRoster((r.data as RosterRow | null)?.players));
+        setCanEdit(prof.data?.role === 'editor');
+        // Subscribe after the snapshot so a stale fetch can't overwrite a newer realtime event.
+        channel.subscribe((status) => {
+          if (!alive) return;
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setError('Live updates disconnected — reload to resync.');
+        });
+      } catch (e) {
+        if (alive) setError(`Could not load board data: ${e instanceof Error ? e.message : String(e)}`);
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+
+    return () => { alive = false; offBus(); void sb.removeChannel(channel); };
   }, []);
 
   const value = useMemo<BoardCtx>(() => ({
