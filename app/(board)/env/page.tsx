@@ -1,5 +1,6 @@
 'use client';
-// Placeholder. Owned by the UI agent for this tab.
+import { EnvTab } from '@/components/env/EnvTab';
+
 export default function Page() {
-  return <div className="panel empty">env — coming soon</div>;
+  return <EnvTab />;
 }
