@@ -66,6 +66,11 @@ export interface FullDerived {
   oppShots: number[];
   oppGoals: number[];
   oppSubs: number[];
+  /** Original-name aliases (same arrays as ufShots/oppShots/ufGoals/oppGoals). */
+  shotsUF: number[];
+  shotsOpp: number[];
+  goalsUF: number[];
+  goalsOpp: number[];
   ev: (GameEvent & { i: number })[];
   /** Data problems found while rebuilding spells (e.g. sub where `off` wasn't on the field). */
   warnings: string[];
@@ -78,7 +83,8 @@ export interface HalfDerived {
   starters: string[];
   bench: string[];
   subs: SubRec[];
-  moments: { t: number; m: number; min: number; subs: SubRec[] }[];
+  /** `list` is the original name; `subs` is the same array. */
+  moments: { t: number; m: number; min: number; subs: SubRec[]; list: SubRec[] }[];
   /** On at the start of the half and never subbed off / sent off in it. */
   full: string[];
   minH: Record<string, number>;
@@ -88,6 +94,10 @@ export interface HalfDerived {
   oppShots: number[];
   oppGoals: number[];
   oppSubs: number[];
+  shotsUF: number[];
+  shotsOpp: number[];
+  goalsUF: number[];
+  goalsOpp: number[];
   /** Halftime changes (same as FullDerived.htSubs). */
   ht: SubRec[];
   first: number | null;
@@ -182,7 +192,7 @@ export function fullD(g: Game): FullDerived {
   const mins: Record<string, number> = {};
   Object.entries(spells).forEach(([p, s]) => (mins[p] = sum(s.map(([a, b]) => b - a))));
   const pick = (team: string, types: string[]) => ev.filter((e) => e.team === team && types.includes(e.type)).map((e) => e.t / 60);
-  const F: FullDerived = {
+  const F = {
     END, restarts, spells, mins, subs, ev, warnings, scoreAt,
     reds: reds.map(({ player, min, t, half }) => ({ player, min, t, half })),
     htSubs: subs.filter((s) => s.ht),
@@ -191,7 +201,8 @@ export function fullD(g: Game): FullDerived {
     ufShots: pick('UF', ['SHOT', 'GOAL']), oppShots: pick('OPP', ['SHOT', 'GOAL']),
     ufGoals: pick('UF', ['GOAL']), oppGoals: pick('OPP', ['GOAL']),
     oppSubs: ev.filter((e) => e.type === 'SUB' && e.team === 'OPP').map((e) => e.t / 60),
-  };
+  } as FullDerived;
+  Object.assign(F, { shotsUF: F.ufShots, shotsOpp: F.oppShots, goalsUF: F.ufGoals, goalsOpp: F.oppGoals });
   FULL.set(g, F);
   return F;
 }
@@ -220,7 +231,7 @@ export function halfD(g: Game, h: 1 | 2): HalfDerived {
     return { ...s, starterOff: starters.includes(s.off) && first };
   });
   const moments: HalfDerived['moments'] = [];
-  subs.forEach((s) => { const l = moments[moments.length - 1]; if (l && l.t === s.t) l.subs.push(s); else moments.push({ t: s.t, m: s.m, min: s.m, subs: [s] }); });
+  subs.forEach((s) => { const l = moments[moments.length - 1]; if (l && l.t === s.t) l.subs.push(s); else { const list = [s]; moments.push({ t: s.t, m: s.m, min: s.m, subs: list, list }); } });
   // BUG FIX (L657): a starter sent off with a red card did not "go the full half".
   const redH = new Set(F.reds.filter((r) => r.half === h).map((r) => r.player));
   const full = starters.filter((p) => !subs.some((s) => s.off === p) && !redH.has(p));
@@ -232,7 +243,7 @@ export function halfD(g: Game, h: 1 | 2): HalfDerived {
   const pickH = (team: string, types: string[]) => F.ev.filter((e) => inH(e) && e.team === team && types.includes(e.type)).map((e) => e.t / 60);
   const pos: HalfDerived['pos'] = {};
   [...g.lineup.starters, ...g.lineup.bench].forEach((p) => (pos[p.name] = p));
-  const D: HalfDerived = {
+  const D = {
     h, lo, hi, starters, bench, subs, moments, full, minH, pos,
     ufShots: pickH('UF', ['SHOT', 'GOAL']), oppShots: pickH('OPP', ['SHOT', 'GOAL']),
     ufGoals: pickH('UF', ['GOAL']), oppGoals: pickH('OPP', ['GOAL']),
@@ -240,7 +251,8 @@ export function halfD(g: Game, h: 1 | 2): HalfDerived {
     ht: F.htSubs,
     first: subs[0] ? subs[0].m : null,
     last: subs.length ? subs[subs.length - 1].m : null,
-  };
+  } as HalfDerived;
+  Object.assign(D, { shotsUF: D.ufShots, shotsOpp: D.oppShots, goalsUF: D.ufGoals, goalsOpp: D.oppGoals });
   c[h] = D;
   return D;
 }

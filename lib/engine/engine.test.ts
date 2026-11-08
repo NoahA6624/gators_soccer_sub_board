@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { gameA, gameB, gameC } from './__fixtures__/games';
 import {
-  benchOf, buildNameIndex, chkRun, envOf, envPlayers, fullD, fullInsights, fullPlayerStats, fullTeamStats, halfD, insights,
+  benchOf, benchOfGame, restsOfGame, buildNameIndex, chkRun, envOf, envPlayers, fullD, fullInsights, fullPlayerStats, fullTeamStats, halfD, insights,
   minutesData, minutesRows, patternText, playerStats, ppAgg, ppRec, ppWeek, restAgg, restsOf, roleOf, scnCompute, stGames, stStats, teamStats,
 } from './index';
 
@@ -34,7 +34,8 @@ describe('golden: gameA (regulation, HT changes, re-entry, red card)', () => {
   it('minutesRows', () => {
     const d = minutesData(g);
     expect(d.unused).toEqual(['Nutmeg']);
-    const alder = minutesRows(g).find((r) => r.p === 'Alder')!;
+    expect(minutesRows(g).END).toBe(90);
+    const alder = minutesRows(g).rows.find((r) => r.p === 'Alder')!;
     expect(alder).toMatchObject({ m1: 20, m2: 45, full: 65, role: 'Start', spells: '0:00–20:00, 45:00–90:00' });
   });
   it('does not write cache onto the game object', () => {
@@ -148,5 +149,19 @@ describe('aggregates smoke', () => {
     expect(envPlayers(games, 'venue').find((r) => r.p === 'Keeper')!.A.apps).toBe(2);
     expect(scnCompute(games, { venue: 'Home' }).direct.length).toBe(2);
     expect(chkRun(games, { data: 'all', inc: { venue: true, time: false, heat: false, week: false } })!.sel).toEqual([['venue', 'Home']]);
+  });
+});
+
+describe('original property names', () => {
+  it('aliases + per-game variants', () => {
+    const g = gameA();
+    const F = fullD(g), h = halfD(g, 1);
+    expect(F.shotsUF).toBe(F.ufShots);
+    expect(F.goalsOpp).toBe(F.oppGoals);
+    expect(h.shotsUF).toEqual([30, 33]);
+    expect(h.moments[0].list).toBe(h.moments[0].subs);
+    expect(h.subs[0].m).toBe(h.subs[0].min);
+    expect(benchOfGame(g).uf.N).toBe(3);
+    expect(restsOfGame(gameB(), 'Gum').length).toBe(1);
   });
 });

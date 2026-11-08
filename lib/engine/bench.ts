@@ -9,7 +9,8 @@ export interface BenchResult {
 }
 export interface BenchGame { g: Game; b: BenchResult }
 
-function benchOne(g: Game): BenchResult {
+/** Per-game bench minutes (original benchOf(g)). */
+export function benchOfGame(g: Game): BenchResult {
   const F = fullD(g);
   const bx = (p: { name: string; min?: number }) => (p.min != null ? +p.min : Math.round(F.mins[p.name] || 0));
   const ufSt = g.lineup.starters.map((p) => ({ name: p.name, min: bx(p) }));
@@ -23,5 +24,5 @@ function benchOne(g: Game): BenchResult {
 export function benchOf(g: Game): BenchResult;
 export function benchOf(games: Game[]): BenchGame[];
 export function benchOf(x: Game | Game[]): BenchResult | BenchGame[] {
-  return Array.isArray(x) ? x.map((g) => ({ g, b: benchOne(g) })) : benchOne(x);
+  return Array.isArray(x) ? x.map((g) => ({ g, b: benchOfGame(g) })) : benchOfGame(x);
 }

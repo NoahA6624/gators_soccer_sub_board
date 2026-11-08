@@ -96,6 +96,10 @@ export function restsOfSpells(sp: Spell[], g: Game): Rest[] {
 export function restsOf(games: Game[], player?: string): (Rest & { p: string })[] {
   return games.flatMap((g) => Object.entries(fullD(g).spells).filter(([p]) => player == null || p === player).flatMap(([p, sp]) => restsOfSpells(sp, g).map((r) => ({ ...r, p }))));
 }
+/** Rests in one game (optionally for one player). */
+export function restsOfGame(g: Game, player?: string): (Rest & { p: string })[] {
+  return restsOf([g], player);
+}
 export function restAgg(list: Rest[]) {
   if (!list.length) return { n: 0 } as { n: number; avg?: number | null; max?: Rest; min?: Rest; back?: number | null; matches?: number };
   const mx = list.reduce((a, b) => (b.len > a.len ? b : a)), mn = list.reduce((a, b) => (b.len < a.len ? b : a));

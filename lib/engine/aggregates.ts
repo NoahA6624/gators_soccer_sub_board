@@ -338,8 +338,8 @@ export function minutesData(g: Game, opts: EngineOpts = {}): MinutesData {
   const unused = g.lineup.bench.map((p) => p.name).filter((p) => !played.includes(p));
   return { rows, unused, END: F.END };
 }
-/** Stub API: rows only. See minutesData for unused/END. */
-export function minutesRows(g: Game, opts: EngineOpts = {}): MinutesRow[] { return minutesData(g, opts).rows; }
+/** Original minutesRows(g): { rows, unused, END }. (minutesData is the same function.) */
+export function minutesRows(g: Game, opts: EngineOpts = {}): MinutesData { return minutesData(g, opts); }
 
 export function sortedRows(g: Game, sort: { key: string; dir: number } = { key: 'full', dir: -1 }, opts: EngineOpts = {}): MinutesData {
   const d = minutesData(g, opts);
