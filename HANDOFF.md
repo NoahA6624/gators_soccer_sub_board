@@ -23,7 +23,7 @@ Merge in this order, rebasing and re-running `npm run check && npm run build` be
 
 | Order | PR | Branch | What | Review status at snapshot |
 |---|---|---|---|---|
-| 1 | #3 | feat/data-auth | Supabase clients, middleware (login required), magic-link login, realtime `BoardProvider`, mutations, seed/add-editor scripts | Reviewer was fixing middleware to fail closed in production when env is missing |
+| 1 | #3 | feat/data-auth | Supabase clients, middleware (login required), magic-link login, realtime `BoardProvider`, mutations, seed/add-editor scripts | **READY.** The reviewer fixed fail-open middleware in 56161b1: production now returns 503 without env. RLS, the callback redirect and realtime cleanup all verified. Nits: `/api/*` routes must check `getUser()` themselves; `deleteGame` should get a cascading FK later |
 | 2 | #8 | feat/engine | Engine port (fullD/halfD/aggregates/env/strategy/profile/scenario/bench), 5 bug fixes with tests | Reviewer was verifying the math against the original and adding adversarial tests |
 | 3 | #6 | feat/import-export | PDF (pdf.js), CSV, JSON and GPS import; CSV, JSON, XLSX and jsPDF exports | **READY.** Sub on/off orientation matches the original ("X for Y" means on=X, off=Y). The reviewer added a CSV/XLSX formula-injection guard in 3483cb7. Nits: the StatCrew Format A parser has no test, and unknown venues default to Away |
 | 4 | #2 | feat/weather | Open-Meteo `/api/weather` with Supabase cache, `WeatherButton`, venues incl. Fayetteville | **READY.** The reviewer fixed 3 blockers in c11aa87: the auth skip now applies only when `NODE_ENV==='development'`; fetch errors no longer leak the apikey in a 502; empty results are no longer cached forever. Nits are in the PR comment |
