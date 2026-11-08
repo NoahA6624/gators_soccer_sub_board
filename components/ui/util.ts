@@ -11,7 +11,8 @@
 //   safe(fn, fallback)  -> fn() but returns fallback on throw/nullish
 //   subMin(s)           -> minute of a sub/point record (s.m ?? s.min)
 //   esc(s)              -> HTML-escape
-//   relabel(html, idx)  -> replace `<b>Last</b>` in engine HTML strings with `<b>#19 - Mary Jane</b>`
+//   safeHtml(html)      -> escape everything except <b>, </b>, <br>
+//   relabel(html, idx)  -> safeHtml, then replace `<b>Last</b>` in engine HTML strings with `<b>#19 - Mary Jane</b>`
 //   cmpPlayers(a,b,idx) -> sort by shirt number, then display name
 import { playerLabel, type Agg, type NameIndex } from '@/lib/engine';
 
@@ -40,12 +41,28 @@ export const subMin = (s: Agg | null | undefined): number => {
 };
 
 export const esc = (s: unknown) =>
-  String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c] as string);
+  String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string);
 
-/** Engine insight strings bold raw last names (`<b>Smith</b>`); swap them for display labels. */
+const unesc = (s: string) =>
+  s.replace(/&(amp|lt|gt|quot|#39|apos);/g, (_, e: string) =>
+    ({ amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'", apos: "'" })[e] as string);
+
+/**
+ * Sanitise engine HTML: only bare `<b>`, `</b>`, `<br>` survive; every other character is
+ * (re-)escaped, so DB-sourced strings (opponent / player names) can never inject markup even if
+ * the engine forgets to escape them. Existing entities are decoded first so nothing double-escapes.
+ */
+export function safeHtml(html: string): string {
+  return String(html ?? '')
+    .split(/(<\/?b>|<br\s*\/?>)/i)
+    .map((part, i) => (i % 2 ? part.toLowerCase().replace(/<br\s*\/?>/, '<br>') : esc(unesc(part))))
+    .join('');
+}
+
+/** Engine insight strings bold raw last names (`<b>Smith</b>`); swap them for display labels. Output is sanitised. */
 export function relabel(html: string, idx: NameIndex): string {
-  return String(html ?? '').replace(/<b>([^<]+)<\/b>/g, (all, inner: string) => {
-    const key = inner.replace(/&amp;/g, '&').replace(/&#39;|&apos;/g, "'");
+  return safeHtml(String(html ?? '')).replace(/<b>([^<]*)<\/b>/g, (all, inner: string) => {
+    const key = unesc(inner);
     return idx[key] ? `<b>${esc(playerLabel(key, idx))}</b>` : all;
   });
 }

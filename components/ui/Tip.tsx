@@ -3,7 +3,7 @@
 //
 //   <TipProvider>...</TipProvider>      Mount once around a tab's content. Renders the fixed `.tip` box.
 //   const tip = useTip();               Returns (content) => event props to spread on ANY element (incl. SVG):
-//     <rect {...tip(<b>hello</b>)} />    content = ReactNode, or { html: string } for trusted HTML.
+//     <rect {...tip(<b>hello</b>)} />    content = ReactNode, or { html: string } (sanitised: only <b>/<br> kept).
 //   <Tip content={node}><tr>…</tr></Tip>   Wrapper form: clones its single child with the handlers.
 //   <Tip html="<b>x</b>"><rect/></Tip>
 //
@@ -12,6 +12,7 @@ import {
   cloneElement, createContext, isValidElement, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState,
   type HTMLAttributes, type MouseEvent as RMouseEvent, type ReactElement, type ReactNode,
 } from 'react';
+import { safeHtml } from './util';
 
 export type TipContent = ReactNode | { html: string };
 type Handlers = Pick<HTMLAttributes<Element>, 'onMouseMove' | 'onMouseLeave' | 'onClick'>;
@@ -62,7 +63,7 @@ export function TipProvider({ children }: { children: ReactNode }) {
     <TipCtx.Provider value={api}>
       {children}
       {content != null && isHtml(content) ? (
-        <div ref={el} className="tip" role="tooltip" hidden={hidden} dangerouslySetInnerHTML={{ __html: content.html }} />
+        <div ref={el} className="tip" role="tooltip" hidden={hidden} dangerouslySetInnerHTML={{ __html: safeHtml(content.html) }} />
       ) : (
         <div ref={el} className="tip" role="tooltip" hidden={hidden}>{hidden ? null : (content as ReactNode)}</div>
       )}
