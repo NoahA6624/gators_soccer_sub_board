@@ -1,5 +1,7 @@
 'use client';
-// Placeholder. Owned by the UI agent for this tab.
+// Games tab (agent G). See components/games/GamesTab.tsx.
+import { GamesTab } from '@/components/games/GamesTab';
+
 export default function Page() {
-  return <div className="panel empty">games — coming soon</div>;
+  return <GamesTab />;
 }
