@@ -64,7 +64,7 @@ export function gamesFromTagCsv(text: string): Game[] {
   if (ix('type') < 0 || ix('opponent') < 0 || ix('date') < 0) throw new Error('The CSV needs at least date, opponent and type columns.');
   const by = new Map<string, Game>();
   rows.forEach((r) => {
-    const v = (k: string) => (ix(k) >= 0 ? (r[ix(k)] || '').trim() : '');
+    const v = (k: string) => (ix(k) >= 0 ? (r[ix(k)] || '').trim().replace(/^'(?=[=+\-@])/, '') : '');
     const key = v('game_id') || v('date') + '|' + v('opponent');
     let g = by.get(key);
     if (!g) {

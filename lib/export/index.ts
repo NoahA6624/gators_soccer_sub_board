@@ -26,10 +26,14 @@ const fileBase = (g: Game) => `UF-minutes-${g.date}-${safe(g.opp)}`;
 const longDate = (d: string) => new Date(d + 'T12:00').toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' });
 const htStr = (g: Game) => `HT ${g.ht?.uf ?? 0}–${g.ht?.opp ?? 0}`;
 
+/** Spreadsheet formula-injection guard: prefix strings starting with = + - @ (or tab/CR) with '. */
+export const noFormula = (s: string) => (/^[=+\-@\t\r]/.test(s) ? "'" + s : s);
+const guardRow = (row: any[]) => row.map((c) => (typeof c === 'string' ? noFormula(c) : c));
+
 // ---------------------------------------------------------------- CSV (L1466–1474)
 /** detail: START/BENCH = first name; GOAL "pk"; SHOT "sog"; CARD "yellow"/"red". Read back by gamesFromTagCsv. */
 export function gamesToCsvText(games: Game[]): string {
-  const q = (v: unknown) => { const s = v == null ? '' : String(v); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const q = (v: unknown) => { const s = typeof v === 'string' ? noFormula(v) : v == null ? '' : String(v); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
   const out = [CSV_COLS.join(',')];
   games.forEach((g) => {
     const base = [g.id, g.date, g.opp, g.venue, g.tier];
@@ -80,7 +84,7 @@ export async function exportXlsx(games: Game[], filename = 'UF-minutes.xlsx', ct
   if (games.length > 1) {
     const all: any[][] = [['Date', 'Opponent', 'Result', 'Venue', 'SEC', '#', 'Player', 'Pos', 'Role', '1st half', '2nd half', 'Full match']];
     games.forEach((g) => minRows(g).rows.forEach((r) => all.push([g.date, g.opp, `${g.result} ${g.gf}-${g.ga}`, g.venue, isSEC(g) ? 'SEC' : '', r.num ? +r.num : '', L(r.p), r.pos, r.role, r.m1, r.m2, r.full])));
-    const ws = XLSX.utils.aoa_to_sheet(all);
+    const ws = XLSX.utils.aoa_to_sheet(all.map(guardRow));
     ws['!cols'] = [11, 16, 8, 7, 5, 5, 24, 6, 6, 9, 9, 11].map((wch) => ({ wch }));
     ws['!autofilter'] = { ref: `A1:L${all.length}` };
     XLSX.utils.book_append_sheet(wb, ws, 'All matches');
@@ -93,7 +97,7 @@ export async function exportXlsx(games: Game[], filename = 'UF-minutes.xlsx', ct
       ...rows.map((r) => [r.num ? +r.num : '', L(r.p), r.pos, r.role, r.m1, r.m2, r.full, r.spells]),
       ['', 'Team total', '', '', r1(sum(rows.map((r) => r.x1))), r1(sum(rows.map((r) => r.x2))), r1(sum(rows.map((r) => r.xf))), ''], [],
       [unused.length ? `Did not play: ${unused.map(L).join(', ')}` : ''], ['Minutes rebuilt from the official play-by-play. Halftime 45:00; stoppage not added.']];
-    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    const ws = XLSX.utils.aoa_to_sheet(aoa.map(guardRow));
     ws['!cols'] = [5, 24, 6, 7, 9, 9, 11, 34].map((wch) => ({ wch }));
     let n = `${g.date.slice(5)} ${g.opp}`.replace(/[\\/?*[\]:]/g, '').slice(0, 31);
     while (used.has(n)) n = n.slice(0, 28) + ' ' + i;
