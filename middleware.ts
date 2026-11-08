@@ -8,8 +8,14 @@ const PUBLIC = [/^\/login(\/|$)/, /^\/auth(\/|$)/];
 export async function middleware(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  // Not configured yet: let pages render; the board/login pages show a clear "not configured" message.
-  if (!url || !anonKey) return NextResponse.next({ request });
+  if (!url || !anonKey) {
+    // Fail closed in production: never serve the board unauthenticated because env is missing.
+    if (process.env.NODE_ENV === 'production') {
+      return new NextResponse('Supabase not configured', { status: 503, headers: { 'content-type': 'text/plain' } });
+    }
+    // Development only: let pages render; the board/login pages show a clear "not configured" message.
+    return NextResponse.next({ request });
+  }
 
   let response = NextResponse.next({ request });
   const supabase = createServerClient(url, anonKey, {
