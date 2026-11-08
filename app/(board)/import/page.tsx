@@ -1,5 +1,6 @@
 'use client';
-// Placeholder. Owned by the UI agent for this tab.
+import { ImportTab } from '@/components/import/ImportTab';
+
 export default function Page() {
-  return <div className="panel empty">import — coming soon</div>;
+  return <ImportTab />;
 }
