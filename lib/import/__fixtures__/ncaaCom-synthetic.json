@@ -1,0 +1,644 @@
+{
+ "contests": {
+  "data": {
+   "contests": [
+    {
+     "contestId": 1000001,
+     "gameState": "F",
+     "statusCodeDisplay": "final",
+     "currentPeriod": "FINAL",
+     "contestClock": "",
+     "startDate": "11/08/2026",
+     "startTime": "20:00",
+     "startTimeEpoch": 1794186000,
+     "teams": [
+      {
+       "isHome": true,
+       "teamId": "901",
+       "seoname": "rival-u",
+       "nameShort": "Rival U",
+       "nameFull": "Rival University",
+       "score": 1,
+       "conferenceSeo": "sec"
+      },
+      {
+       "isHome": false,
+       "teamId": "900",
+       "seoname": "florida",
+       "nameShort": "Florida",
+       "nameFull": "University of Florida",
+       "score": 1,
+       "conferenceSeo": "sec"
+      }
+     ]
+    },
+    {
+     "contestId": 1000002,
+     "gameState": "I",
+     "startDate": "11/08/2026",
+     "teams": [
+      {
+       "isHome": true,
+       "seoname": "florida-st",
+       "nameShort": "Florida St.",
+       "score": 0
+      },
+      {
+       "isHome": false,
+       "seoname": "north-florida",
+       "nameShort": "North Florida",
+       "score": 0
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "pbp": {
+  "data": {
+   "playbyplay": {
+    "contestId": 1000001,
+    "status": "final",
+    "period": 2,
+    "teams": [
+     {
+      "isHome": false,
+      "teamId": "900",
+      "seoname": "florida",
+      "nameShort": "Florida",
+      "nameFull": "University of Florida"
+     },
+     {
+      "isHome": true,
+      "teamId": "901",
+      "seoname": "rival-u",
+      "nameShort": "Rival U",
+      "nameFull": "Rival University"
+     }
+    ],
+    "periods": [
+     {
+      "periodNumber": 1,
+      "periodDisplay": "1st Half",
+      "playbyplayStats": [
+       {
+        "clock": "00:00:00",
+        "teamId": 901,
+        "plays": [
+         {
+          "playText": "Match started",
+          "homeScore": null,
+          "visitorScore": null,
+          "clock": "00:00:00"
+         }
+        ]
+       },
+       {
+        "clock": "12:10:02",
+        "teamId": 900,
+        "plays": [
+         {
+          "playText": "Shot (goalmouth:lowleft;) by Jo Juliet",
+          "homeScore": null,
+          "visitorScore": null,
+          "clock": "12:10:02"
+         }
+        ]
+       },
+       {
+        "clock": "20:00:01",
+        "teamId": 900,
+        "plays": [
+         {
+          "playText": "Goal (goalmouth:lowleft;from:rightfoot;) by Jo Juliet",
+          "homeScore": null,
+          "visitorScore": null,
+          "clock": "20:00:01"
+         }
+        ]
+       },
+       {
+        "clock": "30:15:00",
+        "teamId": 900,
+        "plays": [
+         {
+          "playText": "Corner(taken)  by Team",
+          "homeScore": null,
+          "visitorScore": null,
+          "clock": "30:15:00"
+         }
+        ]
+       },
+       {
+        "clock": "38:00:03",
+        "teamId": 901,
+        "plays": [
+         {
+          "playText": "Cardyellow(unsporting)  by Sue Sierra",
+          "homeScore": null,
+          "visitorScore": null,
+          "clock": "38:00:03"
+         }
+        ]
+       },
+       {
+        "clock": "45:00:00",
+        "teamId": 901,
+        "plays": [
+         {
+          "playText": "Period ended",
+          "homeScore": null,
+          "visitorScore": null,
+          "clock": "45:00:00"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "periodNumber": 2,
+      "periodDisplay": "2nd Half",
+      "playbyplayStats": [
+       {
+        "clock": "45:00:00",
+        "teamId": 900,
+        "plays": [
+         {
+          "playText": "Sub in Liv Lima",
+          "homeScore": null,
+          "visitorScore": null,
+          "clock": "45:00:00"
+         }
+        ]
+       },
+       {
+        "clock": "45:00:00",
+        "teamId": 900,
+        "plays": [
+         {
+          "playText": "Sub in Hal Hotel",
+          "homeScore": null,
+          "visitorScore": null,
+          "clock": "45:00:00"
+         }
+        ]
+       },
+       {
+        "clock": "45:00:00",
+        "teamId": 901,
+        "plays": [
+         {
+          "playText": "Period started",
+          "homeScore": null,
+          "visitorScore": null,
+          "clock": "45:00:00"
+         }
+        ]
+       },
+       {
+        "clock": "60:12:00",
+        "teamId": 900,
+        "plays": [
+         {
+          "playText": "Sub in May Mike",
+          "homeScore": null,
+          "visitorScore": null,
+          "clock": "60:12:00"
+         }
+        ]
+       },
+       {
+        "clock": "60:12:00",
+        "teamId": 900,
+        "plays": [
+         {
+          "playText": "Sub in Fay Foxtrot",
+          "homeScore": null,
+          "visitorScore": null,
+          "clock": "60:12:00"
+         }
+        ]
+       },
+       {
+        "clock": "70:00:00",
+        "teamId": 901,
+        "plays": [
+         {
+          "playText": "Goal (goalmouth:highleft;noassist;) by Ria Romeo",
+          "homeScore": null,
+          "visitorScore": null,
+          "clock": "70:00:00"
+         }
+        ]
+       },
+       {
+        "clock": "75:00:00",
+        "teamId": 900,
+        "plays": [
+         {
+          "playText": "Sub in Nia November",
+          "homeScore": null,
+          "visitorScore": null,
+          "clock": "75:00:00"
+         }
+        ]
+       },
+       {
+        "clock": "80:00:00",
+        "teamId": 900,
+        "plays": [
+         {
+          "playText": "Shot (blocked;) by Kim Kilo",
+          "homeScore": null,
+          "visitorScore": null,
+          "clock": "80:00:00"
+         }
+        ]
+       },
+       {
+        "clock": "90:00:00",
+        "teamId": 901,
+        "plays": [
+         {
+          "playText": "Period ended",
+          "homeScore": null,
+          "visitorScore": null,
+          "clock": "90:00:00"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "box": {
+  "data": {
+   "boxscore": {
+    "contestId": 1000001,
+    "status": "F",
+    "period": "FINAL",
+    "teams": [
+     {
+      "isHome": false,
+      "teamId": "900",
+      "seoname": "florida",
+      "nameShort": "Florida",
+      "nameFull": "University of Florida"
+     },
+     {
+      "isHome": true,
+      "teamId": "901",
+      "seoname": "rival-u",
+      "nameShort": "Rival U",
+      "nameFull": "Rival University"
+     }
+    ],
+    "teamBoxscore": [
+     {
+      "teamId": 900,
+      "playerStats": [
+       {
+        "firstName": "ANN",
+        "lastName": "ALPHA",
+        "position": "GK",
+        "number": 1,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "BEA",
+        "lastName": "BRAVO",
+        "position": "D",
+        "number": 2,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "CAT",
+        "lastName": "CHARLIE",
+        "position": "D",
+        "number": 3,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "DEE",
+        "lastName": "DELTA",
+        "position": "D",
+        "number": 4,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "EVE",
+        "lastName": "ECHO",
+        "position": "D",
+        "number": 5,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "FAY",
+        "lastName": "FOXTROT",
+        "position": "M",
+        "number": 6,
+        "minutesPlayed": "60.2",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "GIA",
+        "lastName": "GOLF",
+        "position": "M",
+        "number": 7,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "HAL",
+        "lastName": "HOTEL",
+        "position": "M",
+        "number": 8,
+        "minutesPlayed": "45.0",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "IDA",
+        "lastName": "INDIA",
+        "position": "F",
+        "number": 9,
+        "minutesPlayed": "75.0",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "JO",
+        "lastName": "JULIET",
+        "position": "F",
+        "number": 10,
+        "minutesPlayed": "90",
+        "goals": "1",
+        "assists": "0",
+        "shots": "2",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "KIM",
+        "lastName": "KILO",
+        "position": "F",
+        "number": 11,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "LIV",
+        "lastName": "LIMA",
+        "position": "M",
+        "number": 12,
+        "minutesPlayed": "45.0",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": false,
+        "participated": true
+       },
+       {
+        "firstName": "MAY",
+        "lastName": "MIKE",
+        "position": "F",
+        "number": 13,
+        "minutesPlayed": "29.8",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": false,
+        "participated": true
+       },
+       {
+        "firstName": "NIA",
+        "lastName": "NOVEMBER",
+        "position": "D",
+        "number": 14,
+        "minutesPlayed": "15.0",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": false,
+        "participated": true
+       }
+      ],
+      "teamStats": {
+       "goals": "1"
+      }
+     },
+     {
+      "teamId": 901,
+      "playerStats": [
+       {
+        "firstName": "ZOE",
+        "lastName": "ZULU",
+        "position": "GK",
+        "number": 1,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "YAS",
+        "lastName": "YANKEE",
+        "position": "D",
+        "number": 2,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "XIA",
+        "lastName": "XRAY",
+        "position": "D",
+        "number": 3,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "WEN",
+        "lastName": "WHISKEY",
+        "position": "D",
+        "number": 4,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "VAL",
+        "lastName": "VICTOR",
+        "position": "D",
+        "number": 5,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "UMA",
+        "lastName": "UNIFORM",
+        "position": "M",
+        "number": 6,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "TIA",
+        "lastName": "TANGO",
+        "position": "M",
+        "number": 7,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "SUE",
+        "lastName": "SIERRA",
+        "position": "M",
+        "number": 8,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "RIA",
+        "lastName": "ROMEO",
+        "position": "F",
+        "number": 9,
+        "minutesPlayed": "90",
+        "goals": "1",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "QI",
+        "lastName": "QUEBEC",
+        "position": "F",
+        "number": 10,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       },
+       {
+        "firstName": "PIA",
+        "lastName": "PAPA",
+        "position": "F",
+        "number": 11,
+        "minutesPlayed": "90",
+        "goals": "0",
+        "assists": "0",
+        "shots": "0",
+        "shotsOnGoal": "0",
+        "starter": true,
+        "participated": true
+       }
+      ],
+      "teamStats": {
+       "goals": "1"
+      }
+     }
+    ]
+   }
+  }
+ }
+}

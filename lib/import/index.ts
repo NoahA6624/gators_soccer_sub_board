@@ -17,3 +17,4 @@ export interface GpsParse {
 export function parseGpsCsv(text: string): GpsParse { throw new Error('parseGpsCsv: not implemented'); }
 /** Match GPS names to a game's lineup last names; manual overrides win. */
 export function matchGpsRows(p: GpsParse, game: Game, half: 1 | 2, overrides?: Record<string, string>): { rows: LoadRow[]; unmatched: string[] } { throw new Error('matchGpsRows: not implemented'); }
+export * from './ncaaHtml';
