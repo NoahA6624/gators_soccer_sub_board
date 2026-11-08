@@ -27,7 +27,7 @@ Merge in this order, rebasing and re-running `npm run check && npm run build` be
 | 2 | #8 | feat/engine | Engine port (fullD/halfD/aggregates/env/strategy/profile/scenario/bench), 5 bug fixes with tests | Reviewer was verifying the math against the original and adding adversarial tests |
 | 3 | #6 | feat/import-export | PDF (pdf.js), CSV, JSON and GPS import; CSV, JSON, XLSX and jsPDF exports | Reviewer was checking sub on/off orientation and CSV formula injection |
 | 4 | #2 | feat/weather | Open-Meteo `/api/weather` with Supabase cache, `WeatherButton`, venues incl. Fayetteville | In review |
-| 5 | #4 | feat/ui-team-players | Team + Players tabs, shared `components/ui/**` | Reviewer pushed fixes (XSS check on `relabel`) |
+| 5 | #4 | feat/ui-team-players | Team + Players tabs, shared `components/ui/**` | **READY.** The reviewer fixed an XSS issue in d3f6c35: `safeHtml()` in `components/ui/util.ts` keeps only `<b>` and `<br>`, and `relabel`/`Tip` go through it. Nits are in the PR comment (mobile tip `onClick` order, memoise `posFor`) |
 | 6 | #5 | feat/ui-games-profile | Games tab (sub timeline, the priority for tonight) + Player Profile | In review |
 | 7 | #1 | feat/ui-strategy-bench | Sub Strategy (printable sheet + PDF) + Bench | **READY.** Reviewed, no blockers. Nits are in the PR comment, including removing the try/catch engine guards after #8 and checking that `/games?id=` deep links work |
 | 8 | #7 | feat/ui-env-import | Add data (NCAA paste, PDF, CSV, GPS, roster num/first) + Environment | Reviewer was rewriting `components/env/envEngine.ts` to match the real engine API from #8 |
