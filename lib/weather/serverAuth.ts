@@ -5,13 +5,13 @@ import { createServerClient } from '@supabase/ssr';
 
 export type AuthResult = { ok: true; userId: string | null } | { ok: false; status: 401 | 500; error: string };
 
-/** Requires a signed-in Supabase session. Without Supabase config, allowed only outside production. */
+/** Requires a signed-in Supabase session. Without Supabase config, allowed only when NODE_ENV === 'development'. */
 export async function requireUser(): Promise<AuthResult> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL, anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anon) {
-    return process.env.NODE_ENV === 'production'
-      ? { ok: false, status: 500, error: 'Supabase is not configured' }
-      : { ok: true, userId: null };
+    return process.env.NODE_ENV === 'development'
+      ? { ok: true, userId: null }
+      : { ok: false, status: 500, error: 'Supabase is not configured' };
   }
   const store = await cookies();
   const supabase = createServerClient(url, anon, {

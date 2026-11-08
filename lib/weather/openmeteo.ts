@@ -77,8 +77,9 @@ async function getJson(fetchFn: Fetch, url: string): Promise<Record<string, unkn
   let res: Response;
   try {
     res = await fetchFn(url, { headers: { accept: 'application/json' } });
-  } catch (e) {
-    throw new WeatherUpstreamError(`Open-Meteo unreachable: ${(e as Error).message}`);
+  } catch {
+    // Never surface the underlying error: it may carry the request URL (apikey)
+    throw new WeatherUpstreamError('Open-Meteo unreachable');
   }
   let body: Record<string, unknown> = {};
   try { body = (await res.json()) as Record<string, unknown>; } catch { /* non-JSON body */ }
@@ -214,7 +215,9 @@ export async function getGameWeather(input: Partial<WeatherQuery>, deps: Weather
     if (kind === 'archive' && envFromPayload(payload, q.date, kickoff).tempF == null) {
       try { payload = await fetchHourly('forecast', lat, lon, q.date, deps); } catch { /* keep archive result */ }
     }
-    if (deps.cache) { try { await deps.cache.set(key, payload); } catch { /* best-effort */ } }
+    // Don't cache an empty result: archive entries never expire, so a lagging ERA5 day would stick forever.
+    const usable = envFromPayload(payload, q.date, kickoff).tempF != null;
+    if (deps.cache && usable) { try { await deps.cache.set(key, payload); } catch { /* best-effort */ } }
   }
 
   const env = envFromPayload(payload, q.date, kickoff);
