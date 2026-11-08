@@ -1,5 +1,6 @@
 'use client';
-// Placeholder. Owned by the UI agent for this tab.
+import { StrategyView } from '@/components/strategy/StrategyView';
+
 export default function Page() {
-  return <div className="panel empty">strategy — coming soon</div>;
+  return <StrategyView />;
 }
