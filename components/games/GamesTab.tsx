@@ -48,7 +48,8 @@ export function GamesTab() {
 
   const L = (p: string) => playerLabel(p, idx);
   const pos = (p: string) => posOf(p, games, roster);
-  const PosTag = ({ p }: { p: string }) => (pos(p) ? <span className="pos">{pos(p)}</span> : null);
+  // Plain render helper (not a nested component) so React does not remount these spans every render.
+  const posTag = (p: string) => { const v = pos(p); return v ? <span className="pos">{v}</span> : null; };
   const setGame = (id: string) => setUi('games', { ...gu, gameId: id });
 
   const F = fullD(g);
@@ -84,9 +85,9 @@ export function GamesTab() {
           return (
             <div className="swap" key={i}>
               <span className="idx">{n}</span>
-              <span className="off">{L(s.off)}</span><PosTag p={s.off} />
+              <span className="off">{L(s.off)}</span>{posTag(s.off)}
               <span className="arrow">off · on</span>
-              <span className="on">{L(s.on)}</span><PosTag p={s.on} />
+              <span className="on">{L(s.on)}</span>{posTag(s.on)}
               {starters && !starters.includes(s.off) && <span className="tag">came on earlier this half</span>}
               <span className="state tnum"><b>{s.uf}–{s.opp}</b> {s.state}</span>
             </div>
@@ -153,7 +154,7 @@ export function GamesTab() {
         <div className="divider" />
         <div className="chips">
           <span className="label" style={{ marginRight: 4 }}>On at the {h === 2 ? 'restart' : 'start'} and played the full half</span>
-          {(d?.full ?? []).map((p) => <span className="chip" key={p}>{L(p)}<PosTag p={p} /></span>)}
+          {(d?.full ?? []).map((p) => <span className="chip" key={p}>{L(p)}{posTag(p)}</span>)}
         </div>
         <p className="note" style={{ marginTop: 12 }}>
           {bf != null && <>Shots before our first sub: <b>{b}–{bo}</b> · after: <b>{a}–{ao}</b>. </>}
