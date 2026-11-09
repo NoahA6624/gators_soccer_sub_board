@@ -24,7 +24,7 @@ Merge in this order, rebasing and re-running `npm run check && npm run build` be
 | Order | PR | Branch | What | Review status at snapshot |
 |---|---|---|---|---|
 | 1 | #3 | feat/data-auth | Supabase clients, middleware (login required), magic-link login, realtime `BoardProvider`, mutations, seed/add-editor scripts | **READY.** The reviewer fixed fail-open middleware in 56161b1: production now returns 503 without env. RLS, the callback redirect and realtime cleanup all verified. Nits: `/api/*` routes must check `getUser()` themselves; `deleteGame` should get a cascading FK later |
-| 2 | #8 | feat/engine | Engine port (fullD/halfD/aggregates/env/strategy/profile/scenario/bench), 5 bug fixes with tests | Reviewer was verifying the math against the original and adding adversarial tests |
+| 2 | #8 | feat/engine | Engine port (fullD/halfD/aggregates/env/strategy/profile/scenario/bench), 5 bug fixes with tests | **READY.** Faithful to the original at L622–782. No bugs found. The reviewer added 7 adversarial tests in b3169af (27 total), and GitHub `check` and the Vercel preview are green. **Two behaviour changes need the user's decision**; see "Decisions for the user" |
 | 3 | #6 | feat/import-export | PDF (pdf.js), CSV, JSON and GPS import; CSV, JSON, XLSX and jsPDF exports | **READY.** Sub on/off orientation matches the original ("X for Y" means on=X, off=Y). The reviewer added a CSV/XLSX formula-injection guard in 3483cb7. Nits: the StatCrew Format A parser has no test, and unknown venues default to Away |
 | 4 | #2 | feat/weather | Open-Meteo `/api/weather` with Supabase cache, `WeatherButton`, venues incl. Fayetteville | **READY.** The reviewer fixed 3 blockers in c11aa87: the auth skip now applies only when `NODE_ENV==='development'`; fetch errors no longer leak the apikey in a 502; empty results are no longer cached forever. Nits are in the PR comment |
 | 5 | #4 | feat/ui-team-players | Team + Players tabs, shared `components/ui/**` | **READY.** The reviewer fixed an XSS issue in d3f6c35: `safeHtml()` in `components/ui/util.ts` keeps only `<b>` and `<br>`, and `relabel`/`Tip` go through it. Nits are in the PR comment (mobile tip `onClick` order, memoise `posFor`) |
@@ -34,6 +34,15 @@ Merge in this order, rebasing and re-running `npm run check && npm run build` be
 | 9 | #9 | feat/ncaa | NCAA: paste-HTML parser (`parseNcaaHtml`), ncaa.com feed parser, cached `/api/ncaa` route, `useNcaaLiveGame` 60s live polling hook, `ncaaId` on Game | **Not reviewed yet.** Merge after #6, since it appends `export * from './ncaaHtml'` to `lib/import/index.ts` and that line will conflict. Then the Add data UI (#7) must show `warnings` + `confidence` |
 
 Reviewer agents ran in temp clones and were told **not to merge**. Check each PR's latest commits and review comments before merging; some reviews may not have been posted when we powered down.
+
+## Decisions for the user (engine behaviour, PR #8)
+1. **Sub at 45:00 logged in the 1st half counts as a halftime change.**
+   - Box scores stop the clock at 45:00, so a real stoppage-time 1st-half sub is now counted as halftime, not in-play.
+   - Minutes are unaffected, but "in-play subs" and halftime counts shift.
+   - The alternative is to count only half 2 at 45:00 as halftime, which was the original behaviour.
+2. **A goal at the same second as a sub counts as AFTER the sub.**
+   - Example: a sub made right after conceding, at the same clock time, shows game state "Level", not "Losing".
+   - The original counted the goal before the sub.
 
 ## Known integration risks to check after merging
 1. **Engine API vs UI call sites:**
