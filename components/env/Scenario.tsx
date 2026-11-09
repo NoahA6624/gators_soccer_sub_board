@@ -8,7 +8,7 @@ import { downloadBlob, scnPdf } from '@/lib/export';
 import type { Game } from '@/lib/types';
 import { useTip } from './Tip';
 import { check, scenario } from './envEngine';
-import { dcls, egrpOf, envSelLabel, FACTOR_KEYS, ppD, r0, SCOND, scnName, sgn, vsAt, type EnvUi, type FactorKey } from './envUtil';
+import { dcls, envSelLabel, FACTOR_KEYS, ppD, r0, SCOND, scnName, sgn, vsAt, type EnvUi, type FactorKey } from './envUtil';
 
 type Agg = Record<string, any>;
 const barStyle = (v: number, w: number) => (v >= 0 ? { left: '50%', width: `${w}%`, background: 'var(--orange)' } : { right: '50%', width: `${w}%`, background: 'var(--bench-st)' });
@@ -92,12 +92,11 @@ export function ScenarioView({ u, set, games, lab }: { u: EnvUi; set: (p: Partia
 export function ImpactCheck({ u, set, games, lab }: { u: EnvUi; set: (p: Partial<EnvUi>) => void; games: Game[]; lab: (p: string) => string }) {
   const tip = useTip();
   const c = u.chk;
-  const EG = egrpOf(u.egrp);
-  const filter = (x: Game) => EG[2](x, games) && (u.eres === 'All' || x.result === u.eres);
+  // pool group/result filter is applied inside the engine via egrp/eres
   const g = games.find((x) => x.id === c.id) ?? games[games.length - 1];
   const idx = games.indexOf(g);
-  const all = useMemo(() => games.map((x) => ({ g: x, r: check(games, x, { inc: c.inc, data: c.data, eheat: u.eheat, filter }) })),
-    [games, c.inc, c.data, u.eheat, u.egrp, u.eres]); // eslint-disable-line react-hooks/exhaustive-deps
+  const all = useMemo(() => games.map((x) => ({ g: x, r: check(games, x, { inc: c.inc, data: c.data, eheat: u.eheat, egrp: u.egrp, eres: u.eres }) })),
+    [games, c.inc, c.data, u.eheat, u.egrp, u.eres]);
   if (!g) return <section className="panel empty">No matches yet.</section>;
   const R = all.find((x) => x.g.id === g.id)!.r;
   const pct = (r: Agg) => (r.hits + r.miss ? Math.round((r.hits / (r.hits + r.miss)) * 100) : null);

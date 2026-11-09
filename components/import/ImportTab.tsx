@@ -24,7 +24,7 @@ const withDefaults = (g: Game): Game => ({
 });
 const mk = (game: Game, extra: Partial<Pending> = {}): Pending => ({ key: `p${++seq}`, game: withDefaults(game), ...extra });
 
-type NcaaFn = (html: string, boxHtml?: string) => unknown;
+type NcaaFn = (html: string, opts?: { boxHtml?: string }) => unknown;
 
 export function ImportTab() {
   const { games, loads, roster, canEdit } = useBoard();
@@ -79,7 +79,7 @@ export function ImportTab() {
       const mod = (await import('@/lib/import')) as unknown as Record<string, unknown>;
       const fn = mod.parseNcaaHtml as NcaaFn | undefined;
       if (typeof fn !== 'function') { setNcaaMsg({ kind: 'warn', text: 'NCAA import is not available yet.' }); return; }
-      const r = (await fn(pbp, box.trim() || undefined)) as { game?: Game; warnings?: string[] } | Game | null;
+      const r = (await fn(pbp, { boxHtml: box.trim() || undefined })) as { game?: Game; warnings?: string[] } | Game | null;
       const game = r && 'game' in r ? r.game : (r as Game | null);
       const warnings = (r && 'warnings' in r && Array.isArray(r.warnings) ? r.warnings : []) as string[];
       if (!game || !game.date) throw new Error('No game found in that HTML.');
