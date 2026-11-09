@@ -1,5 +1,6 @@
 'use client';
-// Placeholder. Owned by the UI agent for this tab.
+import { PlayersView } from '@/components/team/PlayersView';
+
 export default function Page() {
-  return <div className="panel empty">players — coming soon</div>;
+  return <PlayersView />;
 }
