@@ -1,10 +1,10 @@
 # Gator Sub Board v2: handoff
 
-_Snapshot 2026-11-08, evening (before Florida @ Arkansas, 8:00 PM CT, NCAA contest 6667166)._
+_Updated 2026-11-09: all PRs merged into dev._
 
 ## Where things stand
 - **Repo:** https://github.com/NoahA6624/gators_soccer_sub_board (moved from UF-Soccer-Analytics; the old URL redirects). Default branch `main`. All work goes through PRs into `dev`, and `dev` is promoted to `main` at each milestone. Branch protection is off, as decided.
-- **`dev`:** has the scaffold, the repo hygiene setup (gitignore, secret scan, pre-commit hook, CI) and a `.gitignore` fix. **No feature PRs are merged yet.**
+- **`dev`:** all feature work is merged (see Merge status). It has not been promoted to `main`.
 - **Supabase** (project `subase-gators-sub-board-backend`, ref `gwfonbgluksadbpkbbfg`):
   - The migration `supabase/migrations/20261108000000_init.sql` is **applied**.
   - CLI note: this CLI version targets a local database by default. Use `npx supabase db push --remote`.
@@ -18,22 +18,28 @@ _Snapshot 2026-11-08, evening (before Florida @ Arkansas, 8:00 PM CT, NCAA conte
   - Confirm the Email provider is enabled.
 - **Editors:** none yet. Run `npx tsx scripts/add-editor.ts <email>` once PR #3 is merged.
 
-## Open PRs (all into `dev`)
-Merge in this order, rebasing and re-running `npm run check && npm run build` between merges. Expect conflicts in `package-lock.json` (regenerate it with `npm install`).
-
-| Order | PR | Branch | What | Review status at snapshot |
-|---|---|---|---|---|
-| 1 | #3 | feat/data-auth | Supabase clients, middleware (login required), magic-link login, realtime `BoardProvider`, mutations, seed/add-editor scripts | **READY.** The reviewer fixed fail-open middleware in 56161b1: production now returns 503 without env. RLS, the callback redirect and realtime cleanup all verified. Nits: `/api/*` routes must check `getUser()` themselves; `deleteGame` should get a cascading FK later |
-| 2 | #8 | feat/engine | Engine port (fullD/halfD/aggregates/env/strategy/profile/scenario/bench), 5 bug fixes with tests | **READY.** Faithful to the original at L622–782. No bugs found. The reviewer added 7 adversarial tests in b3169af (27 total), and GitHub `check` and the Vercel preview are green. **Two behaviour changes need the user's decision**; see "Decisions for the user" |
-| 3 | #6 | feat/import-export | PDF (pdf.js), CSV, JSON and GPS import; CSV, JSON, XLSX and jsPDF exports | **READY.** Sub on/off orientation matches the original ("X for Y" means on=X, off=Y). The reviewer added a CSV/XLSX formula-injection guard in 3483cb7. Nits: the StatCrew Format A parser has no test, and unknown venues default to Away |
-| 4 | #2 | feat/weather | Open-Meteo `/api/weather` with Supabase cache, `WeatherButton`, venues incl. Fayetteville | **READY.** The reviewer fixed 3 blockers in c11aa87: the auth skip now applies only when `NODE_ENV==='development'`; fetch errors no longer leak the apikey in a 502; empty results are no longer cached forever. Nits are in the PR comment |
-| 5 | #4 | feat/ui-team-players | Team + Players tabs, shared `components/ui/**` | **READY.** The reviewer fixed an XSS issue in d3f6c35: `safeHtml()` in `components/ui/util.ts` keeps only `<b>` and `<br>`, and `relabel`/`Tip` go through it. Nits are in the PR comment (mobile tip `onClick` order, memoise `posFor`) |
-| 6 | #5 | feat/ui-games-profile | Games tab (sub timeline, the priority for tonight) + Player Profile | **READY.** The substitution list and minutes table match the original, the selected game stays put across live refreshes, and the XSS check is clean. The reviewer fixed remount-on-refresh in d70493c. Nit: the game charts (histogram, timeline, rotation) aren't ported yet, so they need a follow-up PR |
-| 7 | #1 | feat/ui-strategy-bench | Sub Strategy (printable sheet + PDF) + Bench | **READY.** Reviewed, no blockers. Nits are in the PR comment, including removing the try/catch engine guards after #8 and checking that `/games?id=` deep links work |
-| 8 | #7 | feat/ui-env-import | Add data (NCAA paste, PDF, CSV, GPS, roster num/first) + Environment | **NOT REVIEWED.** The reviewer stalled with no report; check the PR for any partial pushes. Still to do: rewrite `components/env/envEngine.ts` to match the real engine API from #8 (see the risks below), the XSS check, and verifying build after merging #8 |
-| 9 | #9 | feat/ncaa | NCAA: paste-HTML parser (`parseNcaaHtml`), ncaa.com feed parser, cached `/api/ncaa` route, `useNcaaLiveGame` 60s live polling hook, `ncaaId` on Game | **Not reviewed yet.** Merge after #6, since it appends `export * from './ncaaHtml'` to `lib/import/index.ts` and that line will conflict. Then the Add data UI (#7) must show `warnings` + `confidence` |
-
-Reviewer agents ran in temp clones and were told **not to merge**. Check each PR's latest commits and review comments before merging; some reviews may not have been posted when we powered down.
+## Merge status (2026-11-09)
+**All 9 feature PRs are merged into `dev`** (squash), in this order: #3, #8, #6, #2, #4, #5, #1, #10 (integration fixes), #9, #7. No PRs are open. `npm run check` (93 tests) and `npm run build` pass on `dev`.
+- **#10 integration fixes:**
+  - typed the UI's fallbacks to the real engine API
+  - aliased pdfjs-dist's optional `canvas` require away (`next build` failed without it)
+  - eslint, vitest and tsc now ignore `.claude/` and `worktrees/`
+- **#9 NCAA:** reviewed and READY (the comment is on the PR). The reviewer fixed the polling hook (stale merge on id change, duplicate corrected events, stopping on 4xx) and halftime subs in the paste parser. It was merged after resolving a `lib/import/index.ts` conflict.
+- **#7 Env + Add data:** the lead reviewed it.
+  - `envEngine.ts` was rewritten to the real engine API.
+  - The impact check now passes egrp/eres to `chkRun`.
+  - **Bug fixed:** the NCAA paste box score was passed positionally and ignored; it's now `{ boxHtml }`.
+  - No innerHTML anywhere in env/import.
+- **Local smoke test (no login):**
+  - `/team` redirects to `/login`.
+  - `/api/weather` and `/api/ncaa` return 401 JSON without a session.
+  - No console errors.
+  - **The tabs have NOT been clicked through signed in yet.** That needs your magic-link login.
+- **Vercel:** `vercel env ls` shows **no env vars yet**, so the Supabase→Vercel integration is still pending. Production will return 503 until it's connected.
+- Nits left on PRs, not blocking:
+  - #9: the 500 error echoes the raw message; `ncaaAuth.ts` duplicates `lib/supabase/server.ts`; warnings use raw last names
+  - #3: `deleteGame` needs a cascading FK
+  - #6: no test for StatCrew Format A
 
 ## Decisions for the user (engine behaviour, PR #8)
 1. **Sub at 45:00 logged in the 1st half counts as a halftime change.**
@@ -80,7 +86,7 @@ Reviewer agents ran in temp clones and were told **not to merge**. Check each PR
 
 ## Still to do (in order)
 1. Finish the Supabase→Vercel integration and the Auth URL config (needs you, in the dashboards).
-2. Review #9, then merge PRs #3 → #8 → #6 → #9 → #2 → #4 → #5 → #1 → #7.
+2. ~~Review and merge all PRs~~ (done 2026-11-09).
 3. `npm run dev` locally against the real Supabase. Log in, add yourself as editor, import a test game, and click through all 8 tabs.
 4. Deploy a Vercel preview from `dev` and run the smoke test: login, every tab, PDF/CSV import, weather auto-fill, a realtime update showing in a second tab.
 5. Promote `dev` to `main` and deploy production after your review.
