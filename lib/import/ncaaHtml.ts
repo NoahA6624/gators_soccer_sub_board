@@ -382,14 +382,17 @@ export function parseNcaaHtml(html: string, opts: NcaaHtmlOpts = {}): NcaaHtmlRe
     type Moment = { half: number; t: number; team: TeamCode; ins: string[]; outs: string[]; order: number };
     const moments = new Map<string, Moment>();
     pbp.rows.forEach((r, i) => {
-      const t = clockOf(r);
+      let t = clockOf(r);
       if (t === null) return;
+      if (r.half === 1 && t > HALF_SECS) t = HALF_SECS; // 1H stoppage time folds onto 45:00 (as in ncaaCom)
       const team: TeamCode = r.team === ufCol ? 'UF' : 'OPP';
       const resolve = team === 'UF' ? resolveUF : resolveOpp;
       const sub = parseSub(r.text);
       if (sub) {
-        const key = `${r.half}|${t}|${team}`;
-        const m = moments.get(key) || { half: r.half, t, team, ins: [], outs: [], order: i };
+        // Halftime subs logged at 45:00 (end of 1H or start of 2H) belong to 2H.
+        const half = t === HALF_SECS ? 2 : r.half;
+        const key = `${half}|${t}|${team}`;
+        const m = moments.get(key) || { half, t, team, ins: [], outs: [], order: i };
         if (sub.kind === 'pair') {
           // Keep explicit pairs aligned by pushing to both sides together.
           m.ins.push(resolve(sub.on));
