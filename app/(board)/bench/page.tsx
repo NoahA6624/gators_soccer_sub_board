@@ -1,5 +1,6 @@
 'use client';
-// Placeholder. Owned by the UI agent for this tab.
+import { BenchView } from '@/components/strategy/BenchView';
+
 export default function Page() {
-  return <div className="panel empty">bench — coming soon</div>;
+  return <BenchView />;
 }

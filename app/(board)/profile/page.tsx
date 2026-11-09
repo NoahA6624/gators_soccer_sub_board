@@ -1,5 +1,12 @@
 'use client';
-// Placeholder. Owned by the UI agent for this tab.
+// Player Profile tab (agent G). Supports deep links: /profile?player=<last>.
+import { Suspense } from 'react';
+import { ProfileTab } from '@/components/games/ProfileTab';
+
 export default function Page() {
-  return <div className="panel empty">profile — coming soon</div>;
+  return (
+    <Suspense fallback={<div className="panel empty">Loading…</div>}>
+      <ProfileTab />
+    </Suspense>
+  );
 }

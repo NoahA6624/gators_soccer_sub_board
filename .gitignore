@@ -72,3 +72,7 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 desktop.ini
+
+.vercel
+.env*
+!.env.example
