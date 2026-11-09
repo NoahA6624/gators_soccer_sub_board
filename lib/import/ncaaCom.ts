@@ -485,11 +485,14 @@ function reconcileMinutes(game: Game, players: BoxPlayer[], warnings: string[]) 
  * events, score) come from `fresh`; manual fields (venue, tier, conf, stage, env, notes, location,
  * date, id) are kept from `prev`. The feed is append-only and re-sends every play on each refresh,
  * so any `prev` event absent from `fresh` is treated as a manual addition and preserved.
+ * Pass `prevFresh` (the previous raw feed parse) so feed events that were corrected or re-inferred
+ * upstream (e.g. a half-filled SUB completed once box minutes are final) are replaced, not duplicated.
  */
-export function refreshLiveGame(prev: Game, fresh: Game): Game {
+export function refreshLiveGame(prev: Game, fresh: Game, prevFresh?: Game): Game {
   const key = (e: GameEvent) => [e.type, e.team, e.t, e.on || '', e.off || '', e.player || ''].join('|');
   const freshKeys = new Set(fresh.events.map(key));
-  const manual = prev.events.filter((e) => !freshKeys.has(key(e)));
+  const feedKeys = new Set(prevFresh?.events.map(key) ?? []);
+  const manual = prev.events.filter((e) => !freshKeys.has(key(e)) && !feedKeys.has(key(e)));
   const events = [...fresh.events, ...manual].sort((a, b) => a.t - b.t);
   const merged: Game = {
     ...fresh,

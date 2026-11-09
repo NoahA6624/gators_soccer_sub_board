@@ -19,8 +19,14 @@ export function useNcaaLiveGame(gameId: string | null, date?: string) {
   const [data, setData] = useState<NcaaGamePayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const prev = useRef<Game | null>(null);
+  const lastFresh = useRef<Game | null>(null);
 
   useEffect(() => {
+    // New contest: never merge one game's edits/events into another.
+    prev.current = null;
+    lastFresh.current = null;
+    setData(null);
+    setError(null);
     if (!gameId) return;
     let stop = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -29,11 +35,21 @@ export function useNcaaLiveGame(gameId: string | null, date?: string) {
       try {
         const qs = new URLSearchParams({ gameId, ...(date ? { date } : {}) });
         const res = await fetch(`/api/ncaa?${qs}`, { cache: 'no-store' });
-        const body = await res.json();
-        if (!res.ok) throw new Error(body.error || `HTTP ${res.status}`);
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          // Client errors (bad id, signed out, not a Florida game) won't fix themselves: stop polling.
+          // 404 = no data yet (pre-game) and 5xx = upstream trouble: retry after the back-off.
+          if (res.status >= 400 && res.status < 500 && res.status !== 404 && res.status !== 429) {
+            if (!stop) setError(body.error || `HTTP ${res.status}`);
+            return;
+          }
+          throw new Error(body.error || `HTTP ${res.status}`);
+        }
         const payload = body as NcaaGamePayload;
-        const game = prev.current ? refreshLiveGame(prev.current, payload.game) : payload.game;
+        if (stop) return;
+        const game = prev.current ? refreshLiveGame(prev.current, payload.game, lastFresh.current ?? undefined) : payload.game;
         prev.current = game;
+        lastFresh.current = payload.game;
         if (!stop) {
           setData({ ...payload, game });
           setError(null);

@@ -101,4 +101,12 @@ describe('refreshLiveGame', () => {
     expect(merged.events).toHaveLength(fresh.events.length + 1);
     expect(merged.events.some((e) => e.type === 'FOUL')).toBe(true);
   });
+
+  it('replaces corrected feed events instead of keeping them as manual (prevFresh)', () => {
+    const { game: fresh } = ncaaToGame(fx.pbp, fx.box, { date: '2026-11-08' });
+    const halfSub = { half: 2, clock: '75:00', t: 4500, type: 'SUB' as const, team: 'UF' as const, on: 'November' };
+    const prevFresh = { ...fresh, events: [...fresh.events.filter((e) => !(e.type === 'SUB' && e.t === 4500)), halfSub] };
+    const merged = refreshLiveGame(prevFresh, fresh, prevFresh);
+    expect(merged.events.filter((e) => e.type === 'SUB' && e.t === 4500)).toEqual([expect.objectContaining({ on: 'November', off: 'India' })]);
+  });
 });
