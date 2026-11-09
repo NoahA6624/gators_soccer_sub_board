@@ -57,8 +57,8 @@ export function ppInsights(p: string, recs: Rec[], allGames: Game[], eheat = 85)
 
   // rest / best time to rest
   const playedGames = P.map((r) => r.g as Game).filter(Boolean);
-  const rs: Agg[] = (restsOf(playedGames, p) ?? []).filter((r) => r && typeof r.len === 'number');
-  const A = ppAgg(recs) ?? {};
+  const rs: Agg[] = (restsOf(playedGames, p) as unknown as Agg[] ?? []).filter((r) => r && typeof r.len === 'number');
+  const A = (ppAgg(recs as never) ?? {}) as Agg;
   const bins: number[] | null = Array.isArray(A.bins) && A.bins.length === PPBINS.length ? A.bins : null;
   const lowI = bins ? bins.map((v, i) => [v, i]).sort((a, b) => a[0] - b[0])[0][1] : null;
   const lowTxt = lowI != null && P.length >= 3 ? ` She's least often on the field in the ${PPBINS[lowI][0]}–${PPBINS[lowI][1]}' window.` : '';

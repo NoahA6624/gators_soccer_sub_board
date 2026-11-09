@@ -15,8 +15,8 @@ export function PlayersView() {
   const h: 1 | 2 = scope === 'h2' ? 2 : 1;
   const full = scope === 'full';
   const games = useMemo(() => safe(() => filtered(all, filters), all), [all, filters]);
-  const P = useMemo(() => (full ? [] : toList(safe(() => playerStats(games, h, loads), []))), [full, games, h, loads]);
-  const FP = useMemo(() => (full ? toList(safe(() => fullPlayerStats(games, loads), [])) : []), [full, games, loads]);
+  const P = useMemo(() => (full ? [] : toList(safe(() => playerStats(games, h, loads), {} as never))), [full, games, h, loads]);
+  const FP = useMemo(() => (full ? toList(safe(() => fullPlayerStats(games, loads), {} as never)) : []), [full, games, loads]);
   const posFor = (p: string) => safe(() => posOf(p, all, roster), '');
   const profRef = useRef<HTMLDivElement>(null);
 
