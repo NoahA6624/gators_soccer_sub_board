@@ -26,10 +26,10 @@ export function SecBlock({ idx }: { idx: NameIndex }) {
     const non = games.filter((g) => !safe(() => isSEC(g), false));
     if (!sec.length || !non.length) return null;
     const pack = (gs: typeof games) => ({
-      a: safe(() => teamStats(gs, 1), {}), b: safe(() => teamStats(gs, 2), {}), F: safe(() => fullTeamStats(gs), {}),
+      a: safe(() => teamStats(gs, 1), {} as never), b: safe(() => teamStats(gs, 2), {} as never), F: safe(() => fullTeamStats(gs), {} as never),
     });
-    const PS = toList(safe(() => fullPlayerStats(sec, loads), []));
-    const PN = byP(safe(() => fullPlayerStats(non, loads), []));
+    const PS = toList(safe(() => fullPlayerStats(sec, loads), {} as never));
+    const PN = byP(safe(() => fullPlayerStats(non, loads), {} as never));
     return { sec, non, A: pack(sec), B: pack(non), PS, PN };
   }, [games, loads, filters.tier]);
   if (!data) return null;

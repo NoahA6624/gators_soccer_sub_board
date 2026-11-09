@@ -20,7 +20,7 @@ export function TeamHalf({ h }: { h: 1 | 2 }) {
   const { games: all, filters } = useBoard();
   const idx = useNameIndex();
   const games = useMemo(() => safe(() => filtered(all, filters), all), [all, filters]);
-  const T: Agg = useMemo(() => safe(() => teamStats(games, h), {}), [games, h]);
+  const T: Agg = useMemo(() => safe(() => teamStats(games, h), {} as never), [games, h]);
   const ins = useMemo(() => arr<string>(safe(() => insights(games, h), [])), [games, h]);
   const ctx = useMemo(
     () => CTX.map(([l, fn]) => { const gs = all.filter(fn); return { l, n: gs.length, T: gs.length ? safe(() => teamStats(gs, h), {} as Agg) : ({} as Agg) }; }).filter((r) => r.n),

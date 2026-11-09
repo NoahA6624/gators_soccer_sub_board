@@ -47,14 +47,14 @@ const nameList = (rec: Record<string, number> | undefined, idx: NameIndex) =>
 export function Profile({ p, scope, idx, onClose }: { p: string; scope: Scope; idx: NameIndex; onClose: () => void }) {
   const { games, loads, roster } = useBoard();
   const n = games.length;
-  const FA: Agg | undefined = useMemo(() => byP(safe(() => fullPlayerStats(games, loads), []))[p], [games, loads, p]);
+  const FA: Agg | undefined = useMemo(() => byP(safe(() => fullPlayerStats(games, loads), {} as never))[p], [games, loads, p]);
   const ctxF = useMemo(
-    () => (FA ? CTX.map(([l, fn]) => ({ l, r: byP(safe(() => fullPlayerStats(games.filter(fn), loads), []))[p] })).filter((c) => c.r && c.r.g) : []),
+    () => (FA ? CTX.map(([l, fn]) => ({ l, r: byP(safe(() => fullPlayerStats(games.filter(fn), loads), {} as never))[p] })).filter((c) => c.r && c.r.g) : []),
     [FA, games, loads, p],
   );
   const h: 1 | 2 = scope === 'h2' ? 2 : 1;
   const r: Agg | undefined = useMemo(
-    () => (scope === 'full' ? undefined : byP(safe(() => playerStats(games, h, loads), []))[p]),
+    () => (scope === 'full' ? undefined : byP(safe(() => playerStats(games, h, loads), {} as never))[p]),
     [scope, games, h, loads, p],
   );
   const pos = safe(() => posOf(p, games, roster), '');

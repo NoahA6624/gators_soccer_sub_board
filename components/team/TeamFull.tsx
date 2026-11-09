@@ -16,9 +16,9 @@ export function TeamFull() {
   const router = useRouter();
   const [, setPui] = usePlayersUi();
   const games = useMemo(() => safe(() => filtered(all, filters), all), [all, filters]);
-  const T1: Agg = useMemo(() => safe(() => teamStats(games, 1), {}), [games]);
-  const FT: Agg = useMemo(() => safe(() => fullTeamStats(games), {}), [games]);
-  const FP = useMemo(() => toList(safe(() => fullPlayerStats(games, loads), [])), [games, loads]);
+  const T1: Agg = useMemo(() => safe(() => teamStats(games, 1), {} as never), [games]);
+  const FT: Agg = useMemo(() => safe(() => fullTeamStats(games), {} as never), [games]);
+  const FP = useMemo(() => toList(safe(() => fullPlayerStats(games, loads), {} as never)), [games, loads]);
   const ins = useMemo(() => arr<string>(safe(() => fullInsights(games), [])), [games]);
   const posFor = (p: string) => safe(() => posOf(p, all, roster), '');
   const pick = (p: string) => {

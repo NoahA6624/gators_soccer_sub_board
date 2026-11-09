@@ -167,7 +167,7 @@ function WeekSection({ w, label }: { w: Agg; label: string }) {
 
 function RestSection({ rests, label }: { rests: Agg[]; label: string }) {
   const rs = rests.filter((r) => r && typeof r.len === 'number');
-  const a = restAgg(rs.filter((x) => (x.kind ?? 'in2') === 'in2')) ?? {};
+  const a = restAgg(rs.filter((x) => (x.kind ?? 'in2') === 'in2') as never) ?? {};
   const rDesc = (r: Agg | undefined) => (r ? <>{Math.round(r.len)}&apos; <span className="wk-g">{gm(r)} · off {clk(r.off)}, back {clk(r.on)}</span></> : '—');
   const list = rs.slice().sort((x, y) => (y.g?.date ?? '').localeCompare(x.g?.date ?? '') || x.off - y.off);
   return (
@@ -224,10 +224,10 @@ export function ProfileTab() {
 
   const gs = ppGames(games, f.grp, f.res);
   const recs = recsFor(gs, p);
-  const A: Agg = ppAgg(recs) ?? {};
+  const A: Agg = ppAgg(recs as never) ?? {};
   const fixed = ([['Season', 'all'], ['Non-conference', 'nc'], ['SEC', 'sec'], ['Postseason', 'post']] as const).map(([l, k]) => {
     const sub = games.filter(grpFn(k));
-    return { l, k, a: (ppAgg(recsFor(sub, p)) ?? {}) as Agg, n: sub.length };
+    return { l, k, a: (ppAgg(recsFor(sub, p) as never) ?? {}) as Agg, n: sub.length };
   });
   const selTot: Record<string, number> = {};
   gs.forEach((g) => Object.entries(fullD(g)?.mins ?? {}).forEach(([q, m]) => (selTot[q] = (selTot[q] || 0) + m)));
