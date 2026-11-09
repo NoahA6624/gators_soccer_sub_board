@@ -1,5 +1,35 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Supabase setup
+
+The app builds without Supabase credentials; at runtime the login page and board show a "Supabase is not configured" message until the env vars below are set.
+
+1. **Create a project** at [supabase.com](https://supabase.com/dashboard) (note the database password).
+2. **Link and push the schema** (needs `SUPABASE_ACCESS_TOKEN` from Account → Access Tokens, or run `npx supabase login`):
+   ```bash
+   npx supabase link --project-ref <your-project-ref>
+   npx supabase db push        # applies supabase/migrations/* (tables, RLS, is_editor(), realtime)
+   ```
+3. **Auth → Providers → Email:** enabled (magic link). Optionally turn off "Allow new users to sign up" once the team has logged in once; otherwise any email can sign in as a read-only viewer.
+4. **Auth → URL Configuration:**
+   - Site URL: your production URL, e.g. `https://<app>.vercel.app`
+   - Redirect URLs: `http://localhost:3000/auth/callback`, `https://<app>.vercel.app/auth/callback`, and for preview deploys `https://*-<team>.vercel.app/auth/callback`
+5. **Env vars** — copy `.env.example` to `.env.local` (never commit it) and set the same values in Vercel → Settings → Environment Variables:
+   | Var | Where | Notes |
+   | --- | --- | --- |
+   | `NEXT_PUBLIC_SUPABASE_URL` | Project Settings → API | public |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Project Settings → API (anon / publishable key) | public; RLS protects data |
+   | `SUPABASE_SERVICE_ROLE_KEY` | Project Settings → API (service_role / secret key) | **server only**, never `NEXT_PUBLIC_` |
+   | `SUPABASE_DB_PASSWORD`, `SUPABASE_ACCESS_TOKEN` | project creation / account tokens | CLI only |
+6. **Editors:** everyone who signs in can read; only editors can write (RLS). Grant editor rights:
+   ```bash
+   npx tsx scripts/add-editor.ts coach@ufl.edu   # allowlist + upgrade existing profile
+   ```
+7. **Import existing data** from the original board ("Download all data (JSON)"). Keep the export outside the repo:
+   ```bash
+   npx tsx scripts/seed.ts ~/Downloads/gator-sub-board-export.json
+   ```
+
 ## Getting Started
 
 First, run the development server:

@@ -69,6 +69,7 @@ export interface Game {
   result: Result;
   ht?: { uf: number; opp: number };
   source?: 'pdf' | 'manual' | 'csv' | 'ncaa' | string;
+  ncaaId?: string; // ncaa.com contestId when source === 'ncaa'
   tier: 'P4' | 'Non-P4' | string;
   conf?: 'SEC' | 'Non-conf' | string;
   stage?: 'Postseason' | string;
